@@ -1,0 +1,115 @@
+import bisect
+
+def leftest_on(g1):
+    # idx=bisect.bisect_left(idxes,g1)
+    # return leftest_on_arr[idx][1]
+    return leftest_on_arr[g1]
+
+def leftest_und(g2):
+    idx=max(0,bisect.bisect_right(idxes,g2)-1)
+    return leftest_und_arr[idx][1]
+
+def rightest_on(g1):
+    # idx=bisect.bisect_left(idxes,g1)
+    # return rightest_on_arr[idx][1]
+    return rightest_on_arr[g1]
+
+def rightest_und(g2):
+    idx=max(0,bisect.bisect_right(idxes,g2)-1)
+    return rightest_und_arr[idx][1]
+
+
+def check(k):
+    flag=True
+    for i in idxes:
+        if i+k-1<=h:
+            l1,r1=leftest_on(i),rightest_on(i)
+            if r1-l1>=k:
+                continue
+            l=min(l1,leftest_und(i+k-1))
+            r=max(r1,rightest_und(i+k-1))
+            if r-l<k:
+                return True
+        elif flag:
+            flag=False
+            l = min(leftest_on(i), leftest_und(i + k - 1))
+            r = max(rightest_on(i), rightest_und(i + k - 1))
+            if r - l < k:
+                return True
+    return False
+
+def bins():
+    l,r=1,min(w,h)
+    while l<r:
+        m=(l+r)//2
+        if check(m):
+            r=m
+        else:
+            l=m+1
+    return l
+
+with open('input.txt') as f:
+    contrains = f.readline()
+    w, h, n = map(int, contrains.split())
+    points = []
+    horizons = set()
+    while line := f.readline():
+        line.rstrip()
+        x, y = map(int, line.split())
+        points.append((x, y))
+        horizons.add(y)
+
+    idxes=list(horizons)
+    idxes.sort()
+    points.sort(key=lambda x: x[1])
+    leftest_arr=[]
+    rightest_arr=[]
+    l,r=points[0][0],points[0][0]
+    for i in range(1,n):
+        if points[i][1]!=points[i-1][1]:
+            leftest_arr.append((points[i - 1][1], l))
+            rightest_arr.append((points[i - 1][1], r))
+            r=points[i][0]
+            l=points[i][0]
+        else:
+            l=min(l,points[i][0])
+            r=max(r,points[i][0])
+    leftest_arr.append((points[-1][1], l))
+    rightest_arr.append((points[-1][1], r))
+
+    l = w + 1
+    leftest_on_arr = dict()
+    for i, j in leftest_arr:
+        leftest_on_arr[i] = l
+        l = min(l, j)
+    # leftest_on_arr=[]
+    # for i,j in leftest_arr:
+    #     leftest_on_arr.append((i,l))
+    #     l = min(l, j)
+
+    r = 0
+    rightest_on_arr = dict()
+    for i, j in rightest_arr:
+        rightest_on_arr[i] = r
+        r = max(r, j)
+    # rightest_on_arr=[]
+    # for i,j  in rightest_arr:
+    #     rightest_on_arr.append((i,r))
+    #     r = max(r, j)
+
+    leftest_arr=leftest_arr[::-1]
+    l=w+1
+    leftest_und_arr=[]
+    for i,j in leftest_arr:
+        leftest_und_arr.append((i,l))
+        l = min(l, j)
+    leftest_und_arr=leftest_und_arr[::-1]
+
+    rightest_arr=rightest_arr[::-1]
+    r=0
+    rightest_und_arr=[]
+    for i,j  in rightest_arr:
+        rightest_und_arr.append((i,r))
+        r = max(r, j)
+    rightest_und_arr=rightest_und_arr[::-1]
+    print(bins())
