@@ -1,0 +1,321 @@
+def parcer(text):
+    words=text.split()
+    flag=True
+    arr,img,por=[],[],[]
+    c=0
+    for i in words:
+        if flag:
+            if i[0]=='(':
+                por.append(c)
+                c=0
+                flag=False
+                params=dict()
+            else:
+                c+=1
+                arr.append(len(i))
+        else:
+            p=i.split('=')
+            params[p[0]]=p[-1]
+            if i[-1]==')':
+                params[p[0]]=p[-1][:len(p[-1])-1:]
+                flag=True
+                img.append(params)
+    return arr,img,por
+
+surban=[]
+void=False
+abzac=''
+data=[]
+currx,curry=0,0
+nextstr=0
+lastflcord=[0,0]
+lastsim=''
+lastfl=False
+
+def valuecord(x,y,cursim):
+    global nextstr,lastsim
+    dx,dy=currx,curry
+    idx=0
+    # for i,j,k in surban:
+    # for idx in range(len(surban)):
+    # while idx<len(surban):
+    while len(surban)>0:
+        if idx>=len(surban):
+            if cursim=='w'  :
+                if lastsim=='w' or lastsim=='e':
+                    if c + x + dx <= w:
+                        return c + x + dx, dy, cursim
+                    else:
+                        dy+=nextstr
+                        nextstr=h
+                        lastsim=''
+                        dx=0
+                        idx=0
+
+                else:
+                    if x+dx<=w:
+                        return x + dx, dy, cursim
+                    else:
+                        dy+=nextstr
+                        nextstr=h
+                        lastsim=''
+                        dx=0
+                        idx=0
+            if cursim=='e':
+                if lastsim == 'w' or lastsim == 'e':
+                    if c + x + dx <= w:
+                        nextstr=max(nextstr,y)
+                        return c + x + dx, dy, cursim
+                    else:
+                        dy += nextstr
+                        nextstr = h
+                        lastsim = ''
+                        dx = 0
+                        idx = 0
+
+                else:
+                    if x + dx <= w:
+                        nextstr=max(nextstr,y)
+                        return x + dx, dy, cursim
+                    else:
+                        dy += nextstr
+                        nextstr = h
+                        lastsim = ''
+                        dx = 0
+                        idx = 0
+            if cursim=='s':
+                if x + dx <= w:
+                    surban.append((dx, dx + x, dy + y))
+                    surban.sort(key=lambda x: x[0])
+                    return x + dx, dy, cursim
+                else:
+                    dy += nextstr
+                    nextstr = h
+                    lastsim = ''
+                    dx = 0
+                    idx = 0
+
+
+
+        i,j,k=surban[idx]
+
+        if k<=dy:
+            # surban.remove((i,j,k))
+            surban.pop(idx)
+            # idx=0
+            idx=-1
+            # if len(surban)>idx and len(surban)>0:
+            #     i,j,k=surban(idx)
+
+        elif dx<=i:
+            if cursim=='w':
+                if lastsim=='w' or lastsim=='e':
+                    if c+x+dx<=w:
+                        if c+x+dx<=i:
+                            return c+x+dx,dy,cursim
+                        else:
+
+                            lastsim=''
+                            dx=j
+                    else:
+                        idx=-1
+                        lastsim=''
+                        dy+=nextstr
+                        nextstr=h
+                        dx=0
+                else:
+                    if x + dx <= w:
+                        if x + dx <= i:
+                            return x + dx, dy, cursim
+                        else:
+                            lastsim = ''
+                            dx = j
+                    else:
+                        idx=-1
+                        lastsim = ''
+                        dy += nextstr
+                        nextstr = h
+                        dx = 0
+            if cursim=='e':
+                if lastsim=='w' or lastsim=='e':
+                    if c+x+dx<=w:
+                        if c+x+dx<=i:
+                            nextstr=max(nextstr,y)
+                            return c+x+dx,dy,cursim
+                        else:
+                            lastsim=''
+                            dx=j
+                    else:
+                        idx=-1
+                        lastsim=''
+                        dy+=nextstr
+                        nextstr=h
+                        dx=0
+                else:
+                    if x + dx <= w:
+                        if x + dx <= i:
+                            nextstr=max(nextstr,y)
+                            return x + dx, dy, cursim
+                        else:
+                            lastsim = ''
+                            dx = j
+                    else:
+                        idx=-1
+                        lastsim = ''
+                        dy += nextstr
+                        nextstr = h
+                        dx = 0
+            if cursim=='s':
+                if x + dx <= w:
+                    if x + dx <= i:
+                        surban.append((dx,dx+x,dy+y))
+                        surban.sort(key=lambda x:x[0])
+                        return x + dx, dy, cursim
+                    else:
+
+                        lastsim = ''
+                        dx = j
+                else:
+                    idx=-1
+                    lastsim = ''
+                    nextstr = h
+                    dx = 0
+        idx+=1
+
+
+
+    if cursim == 'w':
+        if lastsim == 'w' or lastsim == 'e':
+            if c + x + dx <= w:
+                return c+x+dx,dy,cursim
+            else:
+                dy+=nextstr
+                nextstr=h
+                return x,dy,cursim
+        else:
+            if x + dx <= w:
+                return x+dx,dy,cursim
+            else:
+                dy+=nextstr
+                nextstr=h
+                return x,dy,cursim
+
+    if cursim == 'e':
+        if lastsim == 'w' or lastsim == 'e':
+            if c + x + dx <= w:
+                nextstr = max(nextstr, y)
+                return c + x + dx, dy, cursim
+            else:
+                dy += nextstr
+                nextstr = max(h, y)
+
+                return x,dy,cursim
+        else:
+            if x+dx<=w:
+                nextstr = max(nextstr, y)
+                return x+dx,dy,cursim
+            else:
+                dy += nextstr
+                nextstr = max(h, y)
+                return x, dy, cursim
+
+    if cursim=='s':
+        if x + dx <= w:
+            surban.append((dx, dx+x, dy + y))
+            surban.sort(key=lambda x: x[0])
+            return x + dx, dy, cursim
+        else:
+            dy+=nextstr
+            nextstr = h
+            surban.append((0, x, dy + y))
+            surban.sort(key=lambda x: x[0])
+            return x, dy, cursim
+
+
+
+
+
+
+
+
+
+with open('test10.txt') as f:
+    contrains=f.readline()
+    w,h,c=map(int, contrains.split())
+    curry-=h
+    nextstr=h
+    while line := f.readline():
+        word=line.rstrip()
+        if word:
+            abzac+=' '+word
+        else:
+
+            data.append(abzac)
+            abzac=''
+    data.append(abzac)
+
+
+for abz in data:
+    lastfl = False
+    pic,st,numig=0,0,0
+    curry+=nextstr
+    nextstr=h
+    currx=0
+    lastsim=''
+    arr, img, por=parcer(abz)
+
+    # print(arr,por)
+
+    for j in por:
+
+        for k in range(st,st+j):
+            lastfl=False
+
+            currx,curry,lastsim=valuecord(arr[k]*c,h,'w')
+
+
+        st += j
+        kurimg=img[numig]
+
+
+        if kurimg['layout']=='embedded':
+            # print('e',end=' ')
+            currx, curry,lastsim= valuecord(int(kurimg['width']),int(kurimg['height']), 'e')
+            lastfl=False
+            print(currx-int(kurimg['width']),curry)
+
+
+
+        if kurimg['layout']=='surrounded':
+            # print('s', end=' ')
+            currx, curry,lastsim = valuecord(int(kurimg['width']),int(kurimg['height']),'s')
+            lastfl=False
+            print(currx-int(kurimg['width']),curry)
+
+
+        if kurimg['layout']=='floating':
+            # print('f', end=' ')
+            kurimg['width'],kurimg['dx'],kurimg['dy']=int(kurimg['width']),int(kurimg['dx']),int(kurimg['dy'])
+            if not lastfl:
+                if currx+kurimg['dx']<0:
+                    print(0,curry+kurimg['dy'])
+                    lastflcord=[kurimg['width'],curry+kurimg['dy']]
+                else:
+                    print(min(w-kurimg['width'],currx+kurimg['dx']),curry+kurimg['dy'])
+                    lastflcord = [min(w,currx+kurimg['dx'])+kurimg['width'], curry + kurimg['dy']]
+            else:
+                if lastflcord[0]+kurimg['dx']<0:
+                    print(0,lastflcord[1]+kurimg['dy'])
+                    lastflcord=[kurimg['width'],lastflcord[1]+kurimg['dy']]
+                else:
+                    print(min(w-kurimg['width'],lastflcord[0]+kurimg['dx']),lastflcord[1]+kurimg['dy'])
+                    lastflcord = [min(w,lastflcord[0]+kurimg['dx'])+kurimg['width'], lastflcord[1] + kurimg['dy']]
+            lastfl=True
+
+
+
+        numig+=1
+    if sum(por)<len(arr):
+        repet=(len(arr)-sum(por))
+        for idx2 in range(repet,0,-1):
+            currx, curry, lastsim = valuecord(arr[-idx2] * c, h, 'w')
