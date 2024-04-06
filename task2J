@@ -1,0 +1,171 @@
+n,m=map(int, input().split())
+picture=[[0]*m for _ in range(n)]
+bigsum=0
+for i in range(n):
+    s=input()
+    for j in range(m):
+        if s[j]=='#':
+            picture[i][j]=1
+            bigsum+=1
+
+def first_one(arr):
+    for i in range(len(arr)):
+        for j in range(len(arr[0])):
+            if arr[i][j]==1:
+                return i,j
+    return -1,-1
+
+def find_squares(arr):
+    h,w=len(arr),len(arr[0])
+    i,j=first_one(arr)
+    left,top,right,bottom=j,i,w-1,h-1
+    while j<w:
+        if arr[top][j]==0:
+            right=j-1
+            break
+        j+=1
+    while i<h:
+        if sum(arr[i][left:right+1])<right-left+1:
+            bottom=i-1
+            break
+        i+=1
+    return left,top,right,bottom
+
+def find_squares1(arr):
+    h, w = len(arr), len(arr[0])
+    i, j = first_one(arr)
+    left, top, right, bottom = j, i, w - 1, h - 1
+    while j < w:
+        if arr[top][j] == 0:
+            right = j - 1
+            break
+        j += 1
+    while i < h:
+        if right<m-1:
+            if arr[i][left-1]==1 and arr[i][right+1]==1:
+                bottom=i-1
+                break
+        if sum(arr[i][left:right + 1]) < right - left + 1:
+            bottom = i - 1
+            break
+        i += 1
+    return left, top, right, bottom
+
+def paint(p1,p2):
+    l1, t1, r1, b1 = p1[0], p1[1], p1[2], p1[3]
+    l2, t2, r2, b2 = p2[0], p2[1], p2[2], p2[3]
+    ans = []
+    for i in range(n):
+        s = ''
+        for j in range(m):
+            if (i >= t1 and i <= b1 and j <= r1 and j >= l1):
+                s += 'a'
+            elif (i >= t2 and i <= b2 and j <= r2 and j >= l2):
+                s += 'b'
+            else:
+                s += '.'
+        ans.append(s)
+    return ans
+
+def paintFor1(p1):
+    l, t, r, b = p1[0], p1[1], p1[2], p1[3]
+    ans = []
+    if r-l>0:
+        for i in range(n):
+            s = ''
+            for j in range(m):
+                if (i >= t and i <= b and j==l):
+                    s += 'a'
+                elif (i >= t and i <= b and j <= r and j >= l+1):
+                    s += 'b'
+                else:
+                    s += '.'
+            ans.append(s)
+    else:
+        for i in range(n):
+            s = ''
+            for j in range(m):
+                if (i==t and j <= r and j >= l):
+                    s += 'a'
+                elif (i > t and i <= b and j <= r and j >= l):
+                    s += 'b'
+                else:
+                    s += '.'
+            ans.append(s)
+    return ans
+
+i,j=0,0
+while i<n:
+    j=0
+    while j<m:
+        if picture[i][j]==1:
+            if j==0 or j==m-1:
+                l,t,r,b=find_squares(picture)
+            else:
+                l,t,r,b=find_squares1(picture)
+            i,j=n,m
+        j+=1
+    i+=1
+if bigsum:
+    fl1,fl2,fl3,fl4,fl5=False,False,False,False,False
+    for i in range(t,b+1):
+        for j in range(l):
+            if picture[i][j]==1: fl1=True
+    for i in range(b+1,n):
+        for j in range(l):
+            if picture[i][j]==1: fl2=True
+    for i in range(b+1,n):
+        for j in range(l,r+1):
+            if picture[i][j]==1: fl3=True
+    for i in range(b+1,n):
+        for j in range(r+1,m):
+            if picture[i][j]==1: fl4=True
+    for i in range(t,b+1):
+        for j in range(r+1,m):
+            if picture[i][j]==1: fl5=True
+    s2=-1
+
+
+
+    if fl1 or fl2:
+        new_arr=[row[:l] for row in picture[t:]]
+        s2 = find_squares(new_arr)
+        l2 = s2[0]
+        t2 = s2[1] + t
+        r2 = s2[2]
+        b2 = s2[3] + t
+
+    if not fl1 and (fl2 or fl3 or fl4):
+        new_arr = [row for row in picture[b+1:]]
+        s2 = find_squares(new_arr)
+        l2=s2[0]
+        t2=s2[1]+b+1
+        r2=s2[2]
+        b2=s2[3]+b+1
+
+    if (not fl1 and not fl2 and not fl3) and (fl4 or fl5):
+        new_arr=[row[r+1:] for row in picture[t:]]
+        s2 = find_squares(new_arr)
+        l2 = s2[0]+r+1
+        t2 = s2[1] + t
+        r2 = s2[2]+r+1
+        b2 = s2[3] + t
+
+    if s2==-1:
+        if bigsum>1:
+            print('YES')
+            ans=paintFor1([l,t,r,b])
+            for i in ans:
+                print(i)
+        else:
+            print('NO')
+    elif bigsum>(r-l+1)*(b-t+1)+(r2-l2+1)*(b2-t2+1):
+        print('NO')
+    else:
+        print('YES')
+        ans=paint([l,t,r,b],[l2,t2,r2,b2])
+        for i in ans:
+            print(i)
+
+else:
+    print("NO")
